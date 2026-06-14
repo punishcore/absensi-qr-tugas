@@ -2,209 +2,121 @@
 
 ## Deskripsi Fitur
 
-Fitur Absensi QR merupakan sistem pencatatan kehadiran yang memanfaatkan QR Code sebagai media absensi. Sistem terdiri dari dua peran utama, yaitu Admin dan Pengguna.
+Fitur Absensi QR merupakan sistem pencatatan kehadiran yang memanfaatkan QR Code sebagai media absensi. Sistem terdiri dari tiga peran utama: **Admin**, **Guru (Dosen/Pengajar)**, dan **Mahasiswa (User)**.
 
-Admin bertugas membuat QR Code untuk sesi absensi tertentu, sedangkan pengguna melakukan pemindaian QR Code tersebut untuk mencatat kehadiran.
+Admin dapat membuat sesi absensi dan mata kuliah lalu mengalokasikannya ke Guru terkait. Guru dapat memproyeksikan QR Code kepada mahasiswa agar mahasiswa memindai kode tersebut dan mencatatkan kehadirannya. Laporan kehadiran mahasiswa juga dapat diunduh langsung ke dalam berkas PDF.
 
-Sistem dibangun menggunakan Next.js sebagai framework frontend dan menggunakan Local Storage sebagai media penyimpanan data sementara tanpa memerlukan database.
+Sistem dibangun menggunakan Next.js sebagai framework frontend dan menggunakan Local Storage sebagai media penyimpanan data sementara tanpa memerlukan database backend.
 
 ---
 
 # Tujuan
 
-* Mempermudah proses absensi.
-* Mengurangi proses input data secara manual.
-* Mempercepat pencatatan kehadiran.
-* Menyediakan riwayat absensi secara langsung pada perangkat pengguna.
-* Memudahkan admin dalam membuat dan mengelola sesi absensi.
+* Mempermudah proses absensi dengan QR Code secara instan.
+* Menyediakan hak akses dosen/guru untuk mengontrol penayangan QR Code secara terpisah.
+* Mengurangi penyalahgunaan pembuatan akun dengan membatasi pendaftaran mandiri (hanya untuk Mahasiswa).
+* Menyediakan fitur pembuatan laporan kehadiran siap cetak dalam format dokumen PDF.
+* Menyediakan riwayat absensi secara langsung pada perangkat mahasiswa.
 
 ---
 
 # Teknologi yang Digunakan
 
-## Framework
-
-* Next.js
-* React
-
-## Library QR Scanner
-
-Library yang direkomendasikan adalah html5-qrcode.
-
-### Alasan Pemilihan
-
-* Mendukung pemindaian QR secara realtime.
-* Mendukung berbagai jenis kamera perangkat.
-* Mudah diintegrasikan dengan React dan Next.js.
-* Memiliki dokumentasi yang lengkap.
-* Stabil untuk penggunaan pada browser modern.
+* **Framework**: Next.js 16 (App Router) & React 19
+* **Library QR Code Generator (Offline)**: `qrcode`
+* **Library QR Scanner**: `html5-qrcode`
+* **Library PDF Exporter (Client-side)**: `jspdf`
 
 ---
 
-# Instalasi Dependensi
+# Aktor & Hak Akses Sistem
 
-Untuk menambahkan fitur pemindaian QR ke dalam proyek, diperlukan instalasi package QR Scanner.
+## 1. Admin (Administrator)
+* Login ke sistem.
+* Mengelola Pengguna (Menyetujui pendaftaran baru mahasiswa, menangguhkan/suspend akses akun, menghapus akun).
+* Mendaftarkan akun Admin baru atau Guru baru secara langsung (otomatis berstatus disetujui/aktif).
+* Membuat sesi absensi baru beserta nama mata kuliah dan mengalokasikannya ke Guru/Dosen tertentu.
+* Melihat riwayat seluruh absensi mahasiswa, melakukan pencarian/filter sesi, dan mengunduh Laporan Kehadiran Gabungan (PDF).
+* Menghapus seluruh riwayat data kehadiran.
 
-Menggunakan npm:
+## 2. Guru / Dosen (Pengajar)
+* Login ke sistem.
+* Melihat daftar sesi/mata kuliah yang ditugaskan kepada dirinya.
+* Menampilkan QR Code sesi terpilih secara popup agar mahasiswa dapat melakukan scan di kelas.
+* Mengunduh file gambar QR Code sesi.
+* Memantau daftar riwayat kehadiran mahasiswa khusus pada kelas/mata kuliah yang diajar.
+* Mengunduh Laporan Kehadiran Kelas Pengajar dalam format PDF.
 
-npm install html5-qrcode
-
-Menggunakan pnpm:
-
-pnpm add html5-qrcode
+## 3. Mahasiswa (User/Pengguna)
+* Mendaftar akun baru secara mandiri (status awal: Menunggu Persetujuan Admin).
+* Login ke sistem setelah disetujui oleh Admin.
+* Melakukan scan QR Code menggunakan kamera perangkat (melalui `html5-qrcode`).
+* Memasukkan kode sesi secara manual jika kamera perangkat bermasalah.
+* Melihat riwayat kehadiran pribadi yang sukses dicatat.
 
 ---
 
-# Aktor Sistem
+# Akun Demo Bawaan (Auto-Seeded)
 
-## Admin
-
-Admin memiliki akses untuk:
-
-* Login ke sistem.
-* Membuat sesi absensi.
-* Menghasilkan QR Code absensi.
-* Melihat data kehadiran pengguna.
-* Mengelola riwayat absensi.
-
-## Pengguna
-
-Pengguna memiliki akses untuk:
-
-* Login ke sistem.
-* Melakukan scan QR Code.
-* Melihat riwayat absensi pribadi.
+Jika sistem mendeteksi Local Storage kosong pada kunjungan pertama, data pengguna akan diisi otomatis dengan akun default berikut:
+1. **Admin**: Username `admin` / Password `admin` (Role: Admin)
+2. **Guru**: Username `guru` / Password `guru` (Role: Guru)
+3. **Mahasiswa**: Username `user` / Password `user` (Role: Mahasiswa / User)
 
 ---
 
 # Alur Sistem
 
-## 1. Login
+## 1. Alur Registrasi & Approval Mahasiswa
+1. Mahasiswa membuka halaman pendaftaran di `/register`. Halaman pendaftaran mandiri ini hanya diperuntukkan bagi mahasiswa.
+2. Akun mahasiswa baru didaftarkan dengan status `approved: false` (belum disetujui).
+3. Admin masuk ke Dashboard, membuka tab **Kelola Pengguna**, lalu mengklik tombol **Approve** untuk menyetujui mahasiswa bersangkutan.
+4. Mahasiswa baru dapat melakukan login setelah statusnya diubah menjadi **Disetujui**.
 
-Pengguna maupun admin melakukan login ke dalam sistem menggunakan akun yang telah terdaftar.
+## 2. Alur Pembuatan Kelas & Penugasan Guru
+1. Admin membuat sesi baru dengan mengisi **Nama Mata Kuliah**, **Pertemuan/Sesi**, dan memilih **Guru** yang mengajar dari dropdown list.
+2. Sesi absensi tersimpan dengan mencatat ID dan nama Guru yang ditunjuk.
+3. Guru masuk ke dashboard `/guru`, lalu sesi mata kuliah tersebut langsung muncul di daftar kelas yang diampu.
 
----
-
-## 2. Pembuatan Sesi Absensi
-
-Admin membuat sesi absensi baru.
-
-Contoh:
-
-* Pertemuan 1
-* Pertemuan 2
-* Rapat Bulanan
-* Seminar
-
-Setelah sesi dibuat, sistem menghasilkan QR Code yang dapat dipindai oleh pengguna.
+## 3. Penayangan QR Code & Scan Absensi
+1. Guru mengklik ikon QR Code pada sesi di dashboard miliknya.
+2. QR Code ditampilkan di layar kelas atau diunduh untuk dibagikan.
+3. Mahasiswa membuka rute `/user`, mengaktifkan kamera scanner, lalu mengarahkan ke QR Code Guru.
+4. Sistem melakukan validasi (apakah sesi valid, apakah mahasiswa sudah pernah absen di sesi tersebut) dan mencatat kehadiran.
 
 ---
 
-## 3. Pemindaian QR
+# Penyimpanan Data (Local Storage)
 
-Pengguna membuka halaman absensi dan mengaktifkan kamera perangkat.
+## 1. Data Pengguna (`qr_users`)
+* `id` (NIM/NIP otomatis dengan awalan ADM, GRU, atau USR)
+* `name` (Nama Lengkap)
+* `username`
+* `password`
+* `role` ('admin' | 'guru' | 'user')
+* `approved` (boolean)
 
-QR Code yang telah dibuat oleh admin kemudian dipindai menggunakan kamera.
+## 2. Data Sesi Absensi (`qr_sessions`)
+* `id` (SES-XXXX)
+* `name` (Nama Sesi / Pertemuan)
+* `matkul` (Nama Mata Kuliah)
+* `createdAt` (Waktu Pembuatan)
+* `guruId` (ID Guru pengajar)
+* `guruName` (Nama Guru pengajar)
 
----
-
-## 4. Validasi Data
-
-Sistem melakukan validasi terhadap:
-
-* Status login pengguna.
-* Keberadaan sesi absensi.
-* Format data QR.
-* Riwayat absensi pengguna.
-
----
-
-## 5. Pencatatan Kehadiran
-
-Apabila validasi berhasil, sistem mencatat:
-
-* ID Pengguna
-* Nama Pengguna
-* Nama Sesi
-* Tanggal Absensi
-* Waktu Absensi
-
-Data tersebut kemudian disimpan ke Local Storage.
+## 3. Data Kehadiran (`qr_attendance`)
+* `userId` (ID Mahasiswa)
+* `userName` (Nama Mahasiswa)
+* `sessionId` (ID Sesi)
+* `sessionName` (Nama Sesi)
+* `matkul` (Nama Mata Kuliah)
+* `timestamp` (Waktu Absen)
 
 ---
 
-## 6. Riwayat Absensi
+# Fitur Cetak PDF (jsPDF)
 
-Pengguna dapat melihat daftar absensi yang pernah dilakukan.
-
-Admin dapat melihat seluruh data absensi yang tercatat pada sistem.
-
----
-
-# Penyimpanan Data
-
-## Metode Penyimpanan
-
-Data disimpan menggunakan Local Storage browser.
-
-## Data yang Disimpan
-
-### Data Pengguna
-
-* ID Pengguna
-* Nama Pengguna
-* Informasi Login
-
-### Data Sesi Absensi
-
-* ID Sesi
-* Nama Sesi
-* Tanggal Pembuatan
-
-### Data Kehadiran
-
-* ID Pengguna
-* Nama Pengguna
-* ID Sesi
-* Waktu Absensi
-
----
-
-# Fitur Validasi yang Direkomendasikan
-
-## Pencegahan Absensi Ganda
-
-Sistem mencegah pengguna melakukan absensi lebih dari satu kali pada sesi yang sama.
-
----
-
-## Validasi Login
-
-Hanya pengguna yang telah login yang dapat melakukan absensi.
-
----
-
-## Validasi QR
-
-Sistem memastikan QR Code berasal dari sesi absensi yang dibuat oleh admin.
-
----
-
-## Validasi Sesi
-
-Sistem memastikan sesi absensi masih aktif dan dapat digunakan.
-
----
-
-# Keterbatasan Sistem
-
-* Data dapat dihapus dari browser.
-* Data tidak tersinkronisasi antar perangkat.
-* Keamanan masih terbatas.
-* Tidak cocok untuk penggunaan skala besar atau produksi.
-
----
-
-# Kesimpulan
-
-Fitur Absensi QR memungkinkan proses pencatatan kehadiran dilakukan secara cepat melalui pemindaian QR Code yang dibuat oleh admin. Dengan adanya peran Admin dan Pengguna, proses absensi menjadi lebih terstruktur dan mendekati implementasi sistem absensi yang digunakan pada lingkungan kampus maupun perusahaan. Penyimpanan menggunakan Local Storage menjadikan sistem sederhana dan mudah dikembangkan untuk kebutuhan prototipe maupun pembelajaran.
+Sistem menyertakan tombol **Cetak Laporan (PDF)** di Dashboard Admin dan Dashboard Guru. 
+* Laporan mencakup Kop Laporan yang rapi, waktu cetak, nama pencetak, garis pembatas, serta tabel kehadiran yang memuat Nama Mahasiswa, NIM, Mata Kuliah, Pertemuan, dan Waktu Absensi.
+* Didukung fitur *Auto Page Break* jika data kehadiran melebihi satu halaman kertas.
+* Seluruh berkas dihasilkan langsung secara offline di browser klien dan tersimpan sebagai file `.pdf`.
