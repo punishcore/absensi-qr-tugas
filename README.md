@@ -2,7 +2,9 @@
 
 ## Deskripsi Fitur
 
-Fitur Absensi QR merupakan sistem pencatatan kehadiran yang memanfaatkan QR Code sebagai media identifikasi pengguna. Pengguna cukup melakukan pemindaian QR menggunakan kamera perangkat untuk mencatat kehadiran secara otomatis.
+Fitur Absensi QR merupakan sistem pencatatan kehadiran yang memanfaatkan QR Code sebagai media absensi. Sistem terdiri dari dua peran utama, yaitu Admin dan Pengguna.
+
+Admin bertugas membuat QR Code untuk sesi absensi tertentu, sedangkan pengguna melakukan pemindaian QR Code tersebut untuk mencatat kehadiran.
 
 Sistem dibangun menggunakan Next.js sebagai framework frontend dan menggunakan Local Storage sebagai media penyimpanan data sementara tanpa memerlukan database.
 
@@ -14,6 +16,7 @@ Sistem dibangun menggunakan Next.js sebagai framework frontend dan menggunakan L
 * Mengurangi proses input data secara manual.
 * Mempercepat pencatatan kehadiran.
 * Menyediakan riwayat absensi secara langsung pada perangkat pengguna.
+* Memudahkan admin dalam membuat dan mengelola sesi absensi.
 
 ---
 
@@ -52,47 +55,89 @@ pnpm add html5-qrcode
 
 ---
 
-# Alur Sistem
+# Aktor Sistem
 
-## 1. Membuka Halaman Absensi
+## Admin
 
-Pengguna membuka halaman absensi melalui aplikasi web.
+Admin memiliki akses untuk:
 
-## 2. Aktivasi Kamera
+* Login ke sistem.
+* Membuat sesi absensi.
+* Menghasilkan QR Code absensi.
+* Melihat data kehadiran pengguna.
+* Mengelola riwayat absensi.
 
-Sistem meminta izin akses kamera kepada pengguna.
+## Pengguna
 
-## 3. Pemindaian QR
+Pengguna memiliki akses untuk:
 
-Kamera melakukan pemindaian terhadap QR Code yang diberikan.
-
-## 4. Pembacaan Data
-
-Sistem membaca informasi yang tersimpan di dalam QR Code.
-
-## 5. Validasi Data
-
-Data yang berhasil dipindai diperiksa untuk memastikan format sesuai dengan kebutuhan sistem.
-
-## 6. Penyimpanan Data
-
-Data absensi yang valid disimpan ke Local Storage browser.
-
-## 7. Menampilkan Riwayat
-
-Data yang tersimpan dapat ditampilkan kembali pada halaman riwayat absensi.
+* Login ke sistem.
+* Melakukan scan QR Code.
+* Melihat riwayat absensi pribadi.
 
 ---
 
-# Struktur Data Absensi
+# Alur Sistem
 
-Setiap data absensi minimal memiliki informasi:
+## 1. Login
+
+Pengguna maupun admin melakukan login ke dalam sistem menggunakan akun yang telah terdaftar.
+
+---
+
+## 2. Pembuatan Sesi Absensi
+
+Admin membuat sesi absensi baru.
+
+Contoh:
+
+* Pertemuan 1
+* Pertemuan 2
+* Rapat Bulanan
+* Seminar
+
+Setelah sesi dibuat, sistem menghasilkan QR Code yang dapat dipindai oleh pengguna.
+
+---
+
+## 3. Pemindaian QR
+
+Pengguna membuka halaman absensi dan mengaktifkan kamera perangkat.
+
+QR Code yang telah dibuat oleh admin kemudian dipindai menggunakan kamera.
+
+---
+
+## 4. Validasi Data
+
+Sistem melakukan validasi terhadap:
+
+* Status login pengguna.
+* Keberadaan sesi absensi.
+* Format data QR.
+* Riwayat absensi pengguna.
+
+---
+
+## 5. Pencatatan Kehadiran
+
+Apabila validasi berhasil, sistem mencatat:
 
 * ID Pengguna
 * Nama Pengguna
+* Nama Sesi
+* Tanggal Absensi
 * Waktu Absensi
 
-Informasi tersebut diperoleh dari QR Code dan ditambahkan dengan waktu pemindaian saat proses absensi berlangsung.
+Data tersebut kemudian disimpan ke Local Storage.
+
+---
+
+## 6. Riwayat Absensi
+
+Pengguna dapat melihat daftar absensi yang pernah dilakukan.
+
+Admin dapat melihat seluruh data absensi yang tercatat pada sistem.
 
 ---
 
@@ -102,19 +147,26 @@ Informasi tersebut diperoleh dari QR Code dan ditambahkan dengan waktu pemindaia
 
 Data disimpan menggunakan Local Storage browser.
 
-## Keuntungan
+## Data yang Disimpan
 
-* Tidak memerlukan database.
-* Implementasi sederhana.
-* Cocok untuk prototipe dan tugas akademik.
-* Dapat digunakan secara offline setelah aplikasi dimuat.
+### Data Pengguna
 
-## Kekurangan
+* ID Pengguna
+* Nama Pengguna
+* Informasi Login
 
-* Data dapat dihapus oleh pengguna.
-* Data hanya tersedia pada perangkat yang sama.
-* Tidak mendukung sinkronisasi antar perangkat.
-* Kurang aman untuk penggunaan produksi.
+### Data Sesi Absensi
+
+* ID Sesi
+* Nama Sesi
+* Tanggal Pembuatan
+
+### Data Kehadiran
+
+* ID Pengguna
+* Nama Pengguna
+* ID Sesi
+* Waktu Absensi
 
 ---
 
@@ -122,31 +174,37 @@ Data disimpan menggunakan Local Storage browser.
 
 ## Pencegahan Absensi Ganda
 
-Sistem memeriksa apakah pengguna telah melakukan absensi sebelumnya sebelum menyimpan data baru.
-
-## Pembatasan Absensi Harian
-
-Sistem dapat membatasi satu pengguna hanya dapat melakukan absensi satu kali dalam satu hari.
-
-## Validasi Format QR
-
-QR Code harus memiliki struktur data yang sesuai dengan format yang ditentukan sistem.
+Sistem mencegah pengguna melakukan absensi lebih dari satu kali pada sesi yang sama.
 
 ---
 
-# Riwayat Absensi
+## Validasi Login
 
-Fitur riwayat memungkinkan pengguna melihat seluruh data absensi yang tersimpan pada Local Storage.
+Hanya pengguna yang telah login yang dapat melakukan absensi.
 
-Informasi yang ditampilkan meliputi:
+---
 
-* ID Pengguna
-* Nama Pengguna
-* Tanggal Absensi
-* Waktu Absensi
+## Validasi QR
+
+Sistem memastikan QR Code berasal dari sesi absensi yang dibuat oleh admin.
+
+---
+
+## Validasi Sesi
+
+Sistem memastikan sesi absensi masih aktif dan dapat digunakan.
+
+---
+
+# Keterbatasan Sistem
+
+* Data dapat dihapus dari browser.
+* Data tidak tersinkronisasi antar perangkat.
+* Keamanan masih terbatas.
+* Tidak cocok untuk penggunaan skala besar atau produksi.
 
 ---
 
 # Kesimpulan
 
-Fitur Absensi QR berbasis Next.js dengan penyimpanan Local Storage merupakan solusi sederhana untuk kebutuhan prototipe, demonstrasi, maupun tugas akademik. Sistem memungkinkan proses absensi dilakukan secara cepat melalui pemindaian QR Code tanpa memerlukan infrastruktur backend yang kompleks.
+Fitur Absensi QR memungkinkan proses pencatatan kehadiran dilakukan secara cepat melalui pemindaian QR Code yang dibuat oleh admin. Dengan adanya peran Admin dan Pengguna, proses absensi menjadi lebih terstruktur dan mendekati implementasi sistem absensi yang digunakan pada lingkungan kampus maupun perusahaan. Penyimpanan menggunakan Local Storage menjadikan sistem sederhana dan mudah dikembangkan untuk kebutuhan prototipe maupun pembelajaran.
