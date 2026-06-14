@@ -147,22 +147,6 @@ Informasi yang ditampilkan meliputi:
 
 ---
 
-# Rekomendasi Pengembangan Lanjutan
-
-Apabila sistem akan digunakan pada lingkungan produksi, disarankan melakukan perubahan arsitektur sebagai berikut:
-
-QR Scanner → Next.js Frontend → API → Database
-
-Database yang dapat digunakan:
-
-* PostgreSQL
-* MySQL
-* MariaDB
-
-Dengan pendekatan tersebut, data absensi menjadi lebih aman, terpusat, dan dapat diakses dari berbagai perangkat.
-
----
-
 # Kesimpulan
 
 Fitur Absensi QR berbasis Next.js dengan penyimpanan Local Storage merupakan solusi sederhana untuk kebutuhan prototipe, demonstrasi, maupun tugas akademik. Sistem memungkinkan proses absensi dilakukan secara cepat melalui pemindaian QR Code tanpa memerlukan infrastruktur backend yang kompleks.
