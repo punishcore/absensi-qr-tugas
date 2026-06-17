@@ -24,11 +24,7 @@ export function AuthLayout({ children, title, subtitle, loading = false }: AuthL
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-zinc-50 py-12 px-6 lg:px-8 dark:bg-zinc-950">
-      {/* Background gradients */}
-      <div className="absolute top-0 -left-4 w-72 h-72 bg-emerald-500 rounded-full mix-blend-multiply filter blur-2xl opacity-10 dark:opacity-20 animate-pulse"></div>
-      <div className="absolute bottom-0 -right-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-2xl opacity-10 dark:opacity-20 animate-pulse delay-75"></div>
-
+    <div className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-zinc-50 p-4 dark:bg-zinc-950">
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 flex flex-col items-center">
         <Logo size="lg" />
         <h2 className="mt-6 text-center text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">

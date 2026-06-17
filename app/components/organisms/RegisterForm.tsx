@@ -77,7 +77,7 @@ export function RegisterForm({
       />
 
       <div className="rounded-xl bg-blue-50 border border-blue-200 p-3 text-xs text-blue-700 dark:bg-blue-950/20 dark:border-blue-900/30 dark:text-blue-400">
-        <span className="font-semibold">ℹ️ Informasi:</span> Registrasi ini hanya untuk akun <strong>Mahasiswa</strong>. Akun Guru & Admin hanya dapat dibuat oleh Administrator.
+        <span className="font-semibold">Informasi:</span> Registrasi ini hanya untuk akun <strong>Mahasiswa</strong>. Akun Guru & Admin hanya dapat dibuat oleh Administrator.
       </div>
 
       <div>

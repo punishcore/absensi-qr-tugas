@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { IoQrCode } from 'react-icons/io5';
 
 export interface LogoProps {
   className?: string;
@@ -15,8 +16,10 @@ export function Logo({ className = '', size = 'md', withText = true }: LogoProps
 
   return (
     <Link href="/" className={`flex items-center gap-2 ${className}`}>
-      <div className={`flex items-center justify-center rounded-lg bg-emerald-500 text-white font-bold shadow-md shadow-emerald-500/20 ${sizes[size].icon}`}>
-        QR
+      <div
+        className={`flex items-center justify-center rounded-lg bg-emerald-500 text-white shadow-md shadow-emerald-500/20 ${sizes[size].icon}`}
+      >
+        <IoQrCode className="h-[70%] w-[70%]" />
       </div>
       {withText && (
         <span className={`font-bold tracking-tight text-zinc-950 dark:text-white ${sizes[size].text}`}>

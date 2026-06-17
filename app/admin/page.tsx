@@ -426,7 +426,7 @@ export default function AdminPage() {
                           <p className="text-sm font-semibold text-zinc-900 dark:text-white truncate">{session.matkul} - {session.name}</p>
                           <p className="text-xs text-zinc-500 dark:text-zinc-400 font-mono mt-0.5">ID: {session.id}</p>
                           {session.guruName && (
-                            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">👨‍🏫 Guru: {session.guruName}</p>
+                            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">Guru: {session.guruName}</p>
                           )}
                         </div>
                         <div className="flex gap-1.5 shrink-0">
