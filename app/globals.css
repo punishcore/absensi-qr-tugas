@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Scrollbar */
+:root {
+  --scrollbar-track: #f1f1f1;
+  --scrollbar-thumb: #c1c1c1;
+  --scrollbar-thumb-hover: #a1a1a1;
+}
+
+.dark {
+  --scrollbar-track: #181818;
+  --scrollbar-thumb: #242424;
+  --scrollbar-thumb-hover: #292929;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
